@@ -44,10 +44,10 @@ def generate_qr():
             flash('Border must be between 0 and 20', 'error')
             return redirect(url_for('index'))
         
-        # Create QR code with minimal density settings
+        # Create QR code with moderate density settings
         qr = QRCode(
             version=1,
-            error_correction=qrcode.ERROR_CORRECT_L,  # Lowest error correction for minimal dots
+            error_correction=qrcode.ERROR_CORRECT_M,  # Medium error correction for balanced dots
             box_size=box_size,
             border=border,
         )
@@ -102,10 +102,10 @@ def download_qr():
         
         qr_data = session['qr_data']
         
-        # Recreate QR code with minimal density settings
+        # Recreate QR code with moderate density settings
         qr = QRCode(
             version=1,
-            error_correction=qrcode.ERROR_CORRECT_L,  # Lowest error correction for minimal dots
+            error_correction=qrcode.ERROR_CORRECT_M,  # Medium error correction for balanced dots
             box_size=qr_data['box_size'],
             border=qr_data['border'],
         )
