@@ -5,6 +5,7 @@ import logging
 from datetime import datetime
 from flask import Flask, render_template, request, send_file, flash, redirect, url_for
 import qrcode
+from qrcode import QRCode
 from PIL import Image
 
 # Configure logging
@@ -43,13 +44,17 @@ def generate_qr():
             flash('Border must be between 0 and 20', 'error')
             return redirect(url_for('index'))
         
-        # Create QR code
-        qr = qrcode.QRCode(
+        # Create QR code with minimal density settings
+        qr = QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            error_correction=qrcode.ERROR_CORRECT_L,  # Lowest error correction for minimal dots
             box_size=box_size,
             border=border,
         )
+        
+        # Give user feedback about data length and QR complexity
+        if len(data) > 200:
+            flash(f'Long data ({len(data)} characters) will create a dense QR code. Consider using a URL shortener for cleaner results.', 'warning')
         
         qr.add_data(data)
         qr.make(fit=True)
@@ -97,10 +102,10 @@ def download_qr():
         
         qr_data = session['qr_data']
         
-        # Recreate QR code
-        qr = qrcode.QRCode(
+        # Recreate QR code with minimal density settings
+        qr = QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
+            error_correction=qrcode.ERROR_CORRECT_L,  # Lowest error correction for minimal dots
             box_size=qr_data['box_size'],
             border=qr_data['border'],
         )
