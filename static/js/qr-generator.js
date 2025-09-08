@@ -74,20 +74,40 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Color picker change handlers for live preview indication
+    // Color picker change handlers and transparent background logic
     const fillColorPicker = document.getElementById('fill_color');
     const backColorPicker = document.getElementById('back_color');
+    const transparentBgCheckbox = document.getElementById('transparent_bg');
+
+    // Handle transparent background checkbox
+    if (transparentBgCheckbox && backColorPicker) {
+        function toggleBackgroundColor() {
+            if (transparentBgCheckbox.checked) {
+                backColorPicker.disabled = true;
+                backColorPicker.style.opacity = '0.5';
+                backColorPicker.parentElement.querySelector('label').style.opacity = '0.5';
+            } else {
+                backColorPicker.disabled = false;
+                backColorPicker.style.opacity = '1';
+                backColorPicker.parentElement.querySelector('label').style.opacity = '1';
+            }
+        }
+
+        // Initial state
+        toggleBackgroundColor();
+
+        // Listen for changes
+        transparentBgCheckbox.addEventListener('change', toggleBackgroundColor);
+    }
 
     if (fillColorPicker) {
         fillColorPicker.addEventListener('change', function() {
-            // Could add live preview here in future iterations
             console.log('Fill color changed to:', this.value);
         });
     }
 
     if (backColorPicker) {
         backColorPicker.addEventListener('change', function() {
-            // Could add live preview here in future iterations
             console.log('Background color changed to:', this.value);
         });
     }

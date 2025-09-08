@@ -28,6 +28,7 @@ def generate_qr():
         data = request.form.get('data', '').strip()
         fill_color = request.form.get('fill_color', '#000000')
         back_color = request.form.get('back_color', '#ffffff')
+        transparent_bg = 'transparent_bg' in request.form
         box_size = int(request.form.get('box_size', 10))
         border = int(request.form.get('border', 4))
         
@@ -59,8 +60,25 @@ def generate_qr():
         qr.add_data(data)
         qr.make(fit=True)
         
-        # Create image
-        img = qr.make_image(fill_color=fill_color, back_color=back_color)
+        # Create image with optional transparency
+        if transparent_bg:
+            # Create transparent QR code
+            img = qr.make_image(fill_color=fill_color, back_color=None)
+            # Convert to RGBA for transparency support
+            if img.mode != 'RGBA':
+                img = img.convert('RGBA')
+                # Make background transparent
+                data_img = img.getdata()
+                new_data = []
+                for item in data_img:
+                    # Change white pixels to transparent
+                    if item[:3] == (255, 255, 255):  # White background
+                        new_data.append((255, 255, 255, 0))  # Transparent
+                    else:
+                        new_data.append(item)  # Keep original
+                img.putdata(new_data)
+        else:
+            img = qr.make_image(fill_color=fill_color, back_color=back_color)
         
         # Convert to base64 for preview
         img_buffer = io.BytesIO()
@@ -74,6 +92,7 @@ def generate_qr():
             'data': data,
             'fill_color': fill_color,
             'back_color': back_color,
+            'transparent_bg': transparent_bg,
             'box_size': box_size,
             'border': border
         }
@@ -113,11 +132,28 @@ def download_qr():
         qr.add_data(qr_data['data'])
         qr.make(fit=True)
         
-        # Create image
-        img = qr.make_image(
-            fill_color=qr_data['fill_color'], 
-            back_color=qr_data['back_color']
-        )
+        # Create image with optional transparency
+        if qr_data.get('transparent_bg', False):
+            # Create transparent QR code
+            img = qr.make_image(fill_color=qr_data['fill_color'], back_color=None)
+            # Convert to RGBA for transparency support
+            if img.mode != 'RGBA':
+                img = img.convert('RGBA')
+                # Make background transparent
+                data_img = img.getdata()
+                new_data = []
+                for item in data_img:
+                    # Change white pixels to transparent
+                    if item[:3] == (255, 255, 255):  # White background
+                        new_data.append((255, 255, 255, 0))  # Transparent
+                    else:
+                        new_data.append(item)  # Keep original
+                img.putdata(new_data)
+        else:
+            img = qr.make_image(
+                fill_color=qr_data['fill_color'], 
+                back_color=qr_data['back_color']
+            )
         
         # Save to buffer
         img_buffer = io.BytesIO()

@@ -88,6 +88,14 @@
                                                 id="back_color" 
                                                 name="back_color" 
                                                 value="{{ form_data.back_color if form_data else '#ffffff' }}">
+                                            <div class="form-check mt-2">
+                                                <input class="form-check-input" type="checkbox" id="transparent_bg" name="transparent_bg" 
+                                                       {{ 'checked' if form_data and form_data.transparent_bg else '' }}>
+                                                <label class="form-check-label" for="transparent_bg">
+                                                    <i class="fas fa-eye-slash me-1"></i>
+                                                    Transparent background
+                                                </label>
+                                            </div>
                                         </div>
                                     </div>
 
